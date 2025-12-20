@@ -1,48 +1,71 @@
-// This shows the HTML page in "ui.html".
-figma.showUI(__html__);
+// Set up the plugin UI
+figma.showUI(__html__, { width: 400, height: 600 });
 
-// Set the size of the plugin window.
-figma.ui.resize(500, 650);
+// --- SELECTION HANDLING ---
+function handleSelectionChange() {
+    const selection = figma.currentPage.selection;
+    if (selection.length === 1 && selection[0].type === 'TEXT') {
+        const textNode = selection[0];
+        // Send a message to the UI with the selected text content
+        figma.ui.postMessage({
+            type: 'selection-change',
+            payload: {
+                hasTextNode: true,
+                legacyText: textNode.characters,
+                nodeId: textNode.id,
+            }
+        });
+    } else {
+        // Send a message indicating no valid text node is selected
+        figma.ui.postMessage({
+            type: 'selection-change',
+            payload: {
+                hasTextNode: false,
+                legacyText: '',
+                nodeId: null,
+            }
+        });
+    }
+}
 
-// Calls to "parent.postMessage" from within the HTML page will trigger this
-// callback. The callback will be passed the "pluginMessage" property of the
-// posted message.
-figma.ui.onmessage = msg => {
-  // One way of distinguishing between different types of messages sent from
-  // your HTML page is to use an object with a "type" property.
-  if (msg.type === 'apply-text') {
-    const { unicodeText, styles } = msg.payload;
+// Initial check when the plugin is opened
+handleSelectionChange();
 
-    const selectedNodes = figma.currentPage.selection;
-    if (selectedNodes.length === 0) {
-      figma.notify('Please select at least one text layer.', { error: true });
-      return;
+// Listen for future selection changes
+figma.on('selectionchange', handleSelectionChange);
+
+
+// --- MESSAGE HANDLING FROM UI ---
+figma.ui.onmessage = async (msg) => {
+    // Find the text node from the ID sent by the UI
+    const node = figma.getNodeById(msg.payload.nodeId);
+    if (!node || node.type !== 'TEXT') {
+        figma.notify("Selected layer not found or is not a text layer.", { error: true });
+        return;
     }
 
-    let textLayersModified = 0;
-    const loadFonts = async () => {
-      for (const node of selectedNodes) {
-        if (node.type === 'TEXT') {
-          await figma.loadFontAsync(node.fontName as FontName);
-          node.characters = unicodeText;
-          textLayersModified++;
+    if (msg.type === 'apply-text-and-typography') {
+        const { unicodeText, fontFamily, fontSize, lineHeight, letterSpacing } = msg.payload;
+
+        try {
+            // 1. Load the selected font
+            await figma.loadFontAsync({ family: fontFamily, style: "Regular" });
+            
+            // 2. Apply the new font family
+            node.fontName = { family: fontFamily, style: "Regular" };
+            
+            // 3. Apply the converted unicode text
+            node.characters = unicodeText;
+            
+            // 4. Apply other typography settings
+            node.fontSize = fontSize;
+            node.lineHeight = { value: lineHeight, unit: 'PIXELS' };
+            node.letterSpacing = { value: letterSpacing, unit: 'PIXELS' };
+            
+            figma.notify("Text and typography applied successfully!");
+
+        } catch (e) {
+            figma.notify(`Error applying changes: ${e.message}`, { error: true });
         }
-      }
-
-      if (textLayersModified > 0) {
-        figma.notify(`Updated ${textLayersModified} text layer(s).`);
-      } else {
-        figma.notify('No text layers were selected.', { error: true });
-      }
-    };
-
-    loadFonts().then(() => {
-        // Close the plugin after applying the text.
-        // figma.closePlugin();
-    });
-  }
-
-  // Make sure to close the plugin when you're done. Otherwise the plugin will
-  // keep running, which shows the cancel button at the bottom of the screen.
-  // figma.closePlugin();
+    }
 };
