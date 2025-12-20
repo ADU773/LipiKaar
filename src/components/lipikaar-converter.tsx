@@ -214,7 +214,7 @@ export default function LipikaarConverter() {
           <Copy className="mr-2 h-4 w-4" /> Copy Text
         </Button>
         <Button onClick={handleApply}>
-          <svg className="mr-2" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5C5 2.22386 5.22386 2 5.5 2H9.5C9.77614 2 10 2.22386 10 2.5V3H5V2.5ZM4 3V2.5C4 1.67157 4.67157 1 5.5 1H9.5C10.3284 1 11 1.67157 11 2.5V3H12.5C12.7761 3 13 3.22386 13 3.5V11.5C13 11.7761 12.7761 12 12.5 12H2.5C2.22386 12 2 11.7761 2 11.5V3.5C2 3.22386 2.22386 3 2.5 3H4ZM3 4V11H12V4H3Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+          <svg className="mr-2" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5C5 2.22386 5.22386 2 5.5 2H9.5C9.77614 2 10 2.22386 10 2.5V3H5V2.5ZM4 3V2.5C4 1.67157 4.67157 1 5.5 1H9.5C10.3284 1 11 1.67157 11 2.5V3H12.5C12.7761 3 13 3.22386 13 3.5V11.5C13 11.7761 12.7761 12 12.5 12H2.5C2.22386 12 2 11.7761 2 11.5V3.5C2 3.22386 2.22386 3 2.5 3H4ZM3 4V11H12V4H3Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>
           Apply to Figma
         </Button>
       </CardFooter>
