@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lipikaar UI</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #FAFAF0; /* Corresponds to your app's background */
+    }
+    iframe {
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- In a real deployment, you would replace this with the URL of your hosted Next.js app -->
+  <iframe src="http://localhost:9002"></iframe>
+
+  <script>
+    window.onmessage = (event) => {
+      if (event.data.pluginMessage) {
+        // Forward messages from Figma to the iframe
+        document.querySelector('iframe').contentWindow.postMessage(event.data, '*');
+      } else {
+        // Forward messages from the iframe to Figma
+        parent.postMessage({ pluginMessage: event.data }, '*');
+      }
+    };
+  </script>
+</body>
+</html>
