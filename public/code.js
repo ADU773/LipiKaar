@@ -1,71 +1,39 @@
-// Set up the plugin UI
-figma.showUI(__html__, { width: 400, height: 600 });
+// This is the main plugin code that runs in Figma's backend.
 
-// --- SELECTION HANDLING ---
-function handleSelectionChange() {
-    const selection = figma.currentPage.selection;
-    if (selection.length === 1 && selection[0].type === 'TEXT') {
-        const textNode = selection[0];
-        // Send a message to the UI with the selected text content
-        figma.ui.postMessage({
-            type: 'selection-change',
-            payload: {
-                hasTextNode: true,
-                legacyText: textNode.characters,
-                nodeId: textNode.id,
-            }
-        });
-    } else {
-        // Send a message indicating no valid text node is selected
-        figma.ui.postMessage({
-            type: 'selection-change',
-            payload: {
-                hasTextNode: false,
-                legacyText: '',
-                nodeId: null,
-            }
-        });
-    }
-}
+// Show the UI when the plugin is run.
+// The UI is defined in ui.html.
+figma.showUI(__html__, { width: 240, height: 120 });
 
-// Initial check when the plugin is opened
-handleSelectionChange();
+// Listen for messages sent from the UI (ui.js).
+figma.ui.onmessage = (msg) => {
+  // Check if the message type is 'create-rectangle'.
+  if (msg.type === 'create-rectangle') {
+    // Create a new rectangle node.
+    const rect = figma.createRectangle();
 
-// Listen for future selection changes
-figma.on('selectionchange', handleSelectionChange);
+    // Move the rectangle to the center of the viewport.
+    rect.x = figma.viewport.center.x - 75; // 75 is half the default width (150/2)
+    rect.y = figma.viewport.center.y - 50; // 50 is half the default height (100/2)
 
+    // Set its size.
+    rect.resize(150, 100);
 
-// --- MESSAGE HANDLING FROM UI ---
-figma.ui.onmessage = async (msg) => {
-    // Find the text node from the ID sent by the UI
-    const node = figma.getNodeById(msg.payload.nodeId);
-    if (!node || node.type !== 'TEXT') {
-        figma.notify("Selected layer not found or is not a text layer.", { error: true });
-        return;
-    }
+    // Add it to the current page.
+    figma.currentPage.appendChild(rect);
 
-    if (msg.type === 'apply-text-and-typography') {
-        const { unicodeText, fontFamily, fontSize, lineHeight, letterSpacing } = msg.payload;
+    // Select the new rectangle so the user can see it.
+    figma.currentPage.selection = [rect];
 
-        try {
-            // 1. Load the selected font
-            await figma.loadFontAsync({ family: fontFamily, style: "Regular" });
-            
-            // 2. Apply the new font family
-            node.fontName = { family: fontFamily, style: "Regular" };
-            
-            // 3. Apply the converted unicode text
-            node.characters = unicodeText;
-            
-            // 4. Apply other typography settings
-            node.fontSize = fontSize;
-            node.lineHeight = { value: lineHeight, unit: 'PIXELS' };
-            node.letterSpacing = { value: letterSpacing, unit: 'PIXELS' };
-            
-            figma.notify("Text and typography applied successfully!");
+    // Show a success notification to the user.
+    figma.notify('Rectangle created successfully!', { timeout: 3000 });
+  }
 
-        } catch (e) {
-            figma.notify(`Error applying changes: ${e.message}`, { error: true });
-        }
-    }
+  // After creating the rectangle, close the plugin.
+  figma.closePlugin();
 };
+
+// Handle errors from the UI.
+figma.ui.on('error', (error) => {
+  console.error('Figma Plugin UI Error:', error);
+  figma.notify('An error occurred in the plugin UI.', { error: true });
+});
