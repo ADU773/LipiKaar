@@ -1,300 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lipikaar | Malayalam Font Helper</title>
-    <style>
-        :root {
-            --bg-color: #FAFAF0;
-            --primary-color: #F5F5DC;
-            --accent-color: #A68B64;
-            --text-color: #333;
-            --border-color: #EAEAEA;
-            --button-text-color: #FFFFFF;
-            --font-body: 'Inter', sans-serif;
-            --font-malayalam: 'Noto Sans Malayalam', sans-serif;
-        }
-        body {
-            font-family: var(--font-body);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 16px;
-            font-size: 13px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .section {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        label {
-            font-weight: 600;
-        }
-        select, button {
-            width: 100%;
-            height: 36px;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-            background-color: #FFF;
-            padding: 0 8px;
-            font-family: var(--font-body);
-            font-size: 13px;
-        }
-        button {
-            background-color: var(--accent-color);
-            color: var(--button-text-color);
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-        }
-        button:hover {
-            opacity: 0.9;
-        }
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        #error-message {
-            color: #D9534F;
-            background-color: #FADBD8;
-            padding: 10px;
-            border-radius: 4px;
-            text-align: center;
-            display: none; /* Initially hidden */
-        }
-        .info-box {
-            font-size: 11px;
-            color: #555;
-            background-color: var(--primary-color);
-            padding: 8px;
-            border-radius: 4px;
-            border-left: 3px solid var(--accent-color);
-        }
-        .font-mode-selector {
-            display: flex;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .font-mode-selector button {
-            flex: 1;
-            border-radius: 0;
-            background-color: #fff;
-            color: var(--text-color);
-            border: none;
-            height: 32px;
-            font-weight: normal;
-        }
-        .font-mode-selector button.active {
-            background-color: var(--accent-color);
-            color: var(--button-text-color);
-            font-weight: 600;
-        }
-        #original-text-preview {
-            height: 60px;
-            background-color: #f0f0f0;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px;
-            font-family: var(--font-malayalam);
-            overflow-y: auto;
-            word-break: break-all;
-            color: #666;
-            font-size: 12px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FML Converter</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      padding: 16px;
+      background-color: #f9f9f9;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #e5e5e5;
+    }
+
+    h2 {
+      font-size: 14px;
+      margin: 0 0 12px 0;
+      font-weight: 600;
+      color: #111;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    
+    select, textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 13px;
+    }
+
+    textarea {
+      min-height: 80px;
+      font-family: 'Noto Sans Malayalam', sans-serif;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      flex-grow: 1;
+      padding: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    #apply-button {
+      background-color: #0d99ff;
+      color: white;
+    }
+    #apply-button:hover { background-color: #007acc; }
+    #apply-button:disabled {
+      background-color: #cceeff;
+      cursor: not-allowed;
+    }
+
+    #reset-button {
+      background-color: #eee;
+      color: #333;
+      border-color: #ddd;
+    }
+    #reset-button:hover { background-color: #ddd; }
+
+    .note {
+      font-size: 11px;
+      color: #666;
+      background-color: #f0f0f0;
+      padding: 8px;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+
+    .error {
+      font-size: 12px;
+      color: #d93025;
+      margin-top: 10px;
+      display: none;
+    }
+
+  </style>
 </head>
 <body>
 
-    <div id="error-message">Please select a single text layer in Figma.</div>
+  <div class="section">
+    <h2>Font Mode</h2>
+    <div class="form-group">
+      <label for="font-mode">Select Conversion Type</label>
+      <select id="font-mode">
+        <option value="unicode">Unicode Fonts (Default)</option>
+        <option value="legacy">Legacy Fonts (FML Series)</option>
+      </select>
+      <div class="note">
+        Select "Legacy Fonts" to convert text for use with fonts like FML Chithra, Gayathri, etc.
+      </div>
+    </div>
+  </div>
 
-    <div class="section">
-        <label>Font Mode</label>
-        <div class="font-mode-selector">
-            <button id="mode-unicode" class="active">Unicode</button>
-            <button id="mode-legacy">Legacy (FML)</button>
-        </div>
+  <div class="section">
+    <h2>Font Family & Style</h2>
+    <div class="form-group">
+      <label for="font-family">Font Family</label>
+      <select id="font-family"></select>
     </div>
-    
-    <div id="legacy-info" class="info-box" style="display: none;">
-        Legacy fonts like FML require text to be converted for correct rendering.
-    </div>
-    
-    <div class="section">
-        <label>Font Family</label>
-        <select id="font-family-select"></select>
-    </div>
+  </div>
 
-    <div class="section">
-        <label>Original Text Preview</label>
-        <div id="original-text-preview">(No text selected)</div>
-    </div>
+  <div class="section">
+      <h2>Live Text</h2>
+      <div class="form-group">
+        <label for="unicode-input">Unicode Text (Input from Figma)</label>
+        <textarea id="unicode-input" readonly></textarea>
+      </div>
+      <div class="form-group">
+        <label for="converted-output">Converted Text (Preview)</label>
+        <textarea id="converted-output" readonly></textarea>
+      </div>
+  </div>
 
+  <div class="button-group">
     <button id="apply-button" disabled>Convert & Apply</button>
-    
-    <script>
-        const modeUnicodeBtn = document.getElementById('mode-unicode');
-        const modeLegacyBtn = document.getElementById('mode-legacy');
-        const legacyInfoBox = document.getElementById('legacy-info');
-        const fontFamilySelect = document.getElementById('font-family-select');
-        const applyButton = document.getElementById('apply-button');
-        const errorMessage = document.getElementById('error-message');
-        const originalTextPreview = document.getElementById('original-text-preview');
-        
-        let currentMode = 'unicode';
-        let originalText = '';
-        let isNodeSelected = false;
+    <button id="reset-button">Reset</button>
+  </div>
 
-        const fonts = {
-            unicode: [
-                { name: 'Noto Sans Malayalam', value: { family: 'Noto Sans Malayalam', style: 'Regular' } },
-                { name: 'Noto Serif Malayalam', value: { family: 'Noto Serif Malayalam', style: 'Regular' } },
-                { name: 'Chilanka', value: { family: 'Chilanka', style: 'Regular' } },
-            ],
-            legacy: [
-                { name: 'FML Chithra', value: { family: 'FML-Chithra', style: 'Regular' } },
-                { name: 'FML Gayathri', value: { family: 'FML-Gayathri', style: 'Regular' } },
-            ]
+  <div id="error-message" class="error"></div>
+
+  <script>
+    const fontModeSelect = document.getElementById('font-mode');
+    const fontFamilySelect = document.getElementById('font-family');
+    const unicodeInput = document.getElementById('unicode-input');
+    const convertedOutput = document.getElementById('converted-output');
+    const applyButton = document.getElementById('apply-button');
+    const resetButton = document.getElementById('reset-button');
+    const errorMessage = document.getElementById('error-message');
+
+    let originalText = '';
+    let selectedNodeID = null;
+
+    const fonts = {
+      unicode: [
+        { name: 'Noto Sans Malayalam', value: { family: 'Noto Sans Malayalam', style: 'Regular' }},
+        { name: 'Noto Serif Malayalam', value: { family: 'Noto Serif Malayalam', style: 'Regular' }},
+        { name: 'Chilanka', value: { family: 'Chilanka', style: 'Regular' }},
+      ],
+      legacy: [
+        { name: 'FML Chithra', value: { family: 'FML-Chithra', style: 'Regular' }},
+        { name: 'FML Gayathri', value: { family: 'FML-Gayathri', style: 'Regular' }},
+        { name: 'FML Nisha', value: { family: 'FML-Nisha', style: 'Regular' }},
+      ]
+    };
+
+    function updateFontFamilies() {
+      const mode = fontModeSelect.value;
+      const availableFonts = fonts[mode];
+      
+      fontFamilySelect.innerHTML = '';
+      availableFonts.forEach(font => {
+        const option = document.createElement('option');
+        option.textContent = font.name;
+        option.value = JSON.stringify(font.value);
+        fontFamilySelect.appendChild(option);
+      });
+      
+      convertText();
+    }
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.style.display = message ? 'block' : 'none';
+    }
+
+    function convertText() {
+        const text = unicodeInput.value;
+        if (!text) {
+            convertedOutput.value = '';
+            return;
+        }
+
+        if (fontModeSelect.value === 'legacy') {
+            convertedOutput.value = unicodeToFml(text);
+        } else {
+            convertedOutput.value = text;
+        }
+    }
+
+    // --- Unicode to FML Conversion Logic ---
+    function unicodeToFml(text) {
+        const unicodeToFmlMap = {
+            ' ': ' ', '\n': '\n', '!': '!', '"': '"', '#': '#', '$': '$', '%': '%', '&': '&', "'": "'", '(': '(', ')': ')', '*': '*', '+': '+', ',': ',', '-': '-', '.': '.', '/': '/',
+            '0': '0', '1': '1', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6', '7': '7', '8': '8', '9': '9', ':': ':', ';': ';', '<': '<', '=': '=', '>': '>', '?': '?', '@': '@',
+            'അ': 'A', 'ആ': 'B', 'ഇ': 'C', 'ഈ': 'D', 'ഉ': 'E', 'ഊ': 'F', 'ഋ': 'G', 'എ': 'H', 'ഏ': 'I', 'ഐ': 'sI', 'ഒ': 'J', 'ഓ': 'K', 'ഔ': 'uI',
+            'ക': 'k', 'ഖ': 'J', 'ഗ': 'g', 'ഘ': 'L', 'ങ': '§',
+            'ച': 'N', 'ഛ': 'O', 'ജ': 'P', 'ഝ': 'Q', 'ഞ': 'R',
+            'ട': 'S', 'ഠ': 'T', 'ഡ': 'U', 'ഢ': 'V', 'ണ': 'W',
+            'ത': 'X', 'ഥ': 'Y', 'ദ': 'Z', 'ധ': 'å', 'ന': 'n',
+            'പ': ']', 'ഫ': '^', 'ബ': '_', 'ഭ': '`', 'മ': 'a',
+            'യ': 'b', 'ര': 'c', 'ല': 'e', 'വ': 'h', 'ശ': 'i', 'ഷ': 'j', 'സ': 'k', 'ഹ': 'l', 'ള': 'f', 'ഴ': 'g', 'റ': 'd',
+            'ാ': 'm', 'ി': 'n', 'ീ': 'o', 'ു': 'p', 'ൂ': 'q', 'ൃ': 'r', 'െ': 's', 'േ': 't', 'ൈ': 'ss', 'ൊ': 'sm', 'ോ': 'tm', 'ൌ': 'u',
+            'ം': 'w', 'ഃ': 'x', '്': '{',
+            'ൺ': '¬', 'ൻ': '³', 'ർ': 'À', 'ൽ': 'Â', 'ൾ': 'Ä'
         };
 
-        function updateFontDropdown() {
-            fontFamilySelect.innerHTML = '';
-            const fontList = fonts[currentMode];
-            fontList.forEach(font => {
-                const option = document.createElement('option');
-                option.textContent = font.name;
-                option.value = JSON.stringify(font.value);
-                fontFamilySelect.appendChild(option);
-            });
-        }
-        
-        function setMode(mode) {
-            currentMode = mode;
-            modeUnicodeBtn.classList.toggle('active', mode === 'unicode');
-            modeLegacyBtn.classList.toggle('active', mode === 'legacy');
-            legacyInfoBox.style.display = mode === 'legacy' ? 'block' : 'none';
-            updateFontDropdown();
-        }
+        const conjuncts = {
+            'ക്ക': '¡', 'ക്ത': '¢', 'ക്ര': 'Ñ', 'ക്ല': 'É', 'ക്വ': 'Á', 'ക്ഷ': '£', 'ക്സ': 'Iv-k', 'ഗ്ഗ': '¤', 'ഗ്ര': '¥', 'ഗ്ല': 'Ë', 'ഗ്ന': '·',
+            'ങ്ക': '¦', 'ങ്ങ': '§', 'ച്ച': '¨', 'ഞ്ച': '©', 'ഞ്ഞ': 'ª', 'ട്ട': '«', 'ണ്ട': 'Þ', 'ണ്ണ': '®', 'ത്ത': '¯', 'ത്ര': 'Ò', 'ത്വ': 'Þz',
+            'ഥ്യ': '²y', 'ദ്ധ': '²', 'ദ്ധ്ര': '²{c', 'ദ്ധ്വ': '²{h', 'ന്ന': '¶', 'ന്ത': '´', 'ന്ത്ര': '´{c', 'ന്ദ്ര': 'Z{c', 'ന്ദ': 'µ', 'ന്മ': '·', 'ന്യ': '·p',
+            'പ്പ': '¸', 'പ്ര': 'Ó', 'പ്ല': 'Í', 'ബ്ബ': '»', 'ബ്ര': 'Ô', 'ഭ്ര': '`{c', 'മ്ര': 'a{c', 'മ്പ': '¼', 'മ്മ': '½', 'യ്യ': '¿', 'ല്ല': 'Ã',
+            'വ്വ': 'Æ', 'ശ്ര': 'Ö', 'ശ്ച': 'i{vN', 'ശ്ശ': 'i{vi', 'ഷ୍କ': 'j{v¡', 'ഷ്ഠ': 'j{vS', 'ഷ്ണ': 'j{vW', 'ഷ്പ്ര': 'j{v{]m', 'ഷ്യ': 'j{vbp',
+            'സ്ക': 'kv-I', 'സ്ത': 'kv-X', 'സ്ത്ര': 'kv-{X', 'സ്ഥ': 'kv-Y', 'സ്ന': 'kv-\m', 'സ്പ്ര': 'kv-]{]', 'സ്മ': 'kva', 'സ്യ': 'kzy',
+            'ഹ്ര': 'l{c', 'ഹ്ല': 'l{e', 'ങ്ക': '¦', 'င်္ဂ': '§', 'ജ്ജ': 'Pz', 'ജ്ഞ': 'Ú', 'ണ്ഡ': 'Þ', 'ന്ഥ': '´Y', 'ത്മ': 'ß',
+            'സ്ഥ': 'kvY', 'ഡ്ഡ': 'Uz', 'ക്ട': 'IvS', 'ബ്ദ': 'Ð', 'ശ്ച': 'i{vN', 'ഴ്വ': 'g{vh', 'റ്റ്ന': 'dp', 'റ്റ': 'dpw'
+        };
 
-        modeUnicodeBtn.onclick = () => setMode('unicode');
-        modeLegacyBtn.onclick = () => setMode('legacy');
-        
-        window.onmessage = (event) => {
-            const msg = event.data.pluginMessage;
-            if (msg.type === 'selection-change') {
-                isNodeSelected = !!msg.nodeId;
-                originalText = msg.text || '';
+        const reph = 'À'; 
+
+        const vowelSigns = ['ാ', 'ി', 'ീ', 'ു', 'ൂ', 'ൃ', 'െ', 'േ', 'ൈ', 'ൊ', 'ോ', 'ൌ', 'ം', 'ഃ', '്'];
+        const consonants = Object.keys(unicodeToFmlMap).filter(key => 
+            !vowelSigns.includes(key) && key.length === 1 && key >= 'ക' && key <= 'ഹ'
+        );
+        const preVowelSigns = ['ി', 'ീ', 'െ', 'േ', 'ൈ']; 
+
+        // 1. Replace complex conjuncts first
+        let processedText = text;
+        Object.entries(conjuncts).sort((a, b) => b[0].length - a[0].length).forEach(([uni, fml]) => {
+            processedText = processedText.replace(new RegExp(uni, 'g'), fml);
+        });
+
+        let fmlString = '';
+        let i = 0;
+        while (i < processedText.length) {
+            let char = processedText[i];
+            let nextChar = processedText[i + 1];
+            let nextNextChar = processedText[i + 2];
+
+            // Reph (ർ) handling: if 'ര' + '്' + consonant
+            if (char === 'ര' && nextChar === '്' && consonants.includes(nextNextChar)) {
+                let vowelIndex = -1;
+                // Find where the vowel sign is for this consonant
+                for (let j = i + 3; j < processedText.length; j++) {
+                    if (vowelSigns.includes(processedText[j])) {
+                        vowelIndex = j;
+                        break;
+                    }
+                    if (consonants.includes(processedText[j]) || processedText[j] === ' ') {
+                        break;
+                    }
+                }
                 
-                errorMessage.style.display = isNodeSelected ? 'none' : 'block';
-                applyButton.disabled = !isNodeSelected;
+                let consonantCluster = processedText.substring(i + 2, vowelIndex > -1 ? vowelIndex : processedText.length);
+                let vowelSign = vowelIndex > -1 ? processedText[vowelIndex] : '';
+
+                let convertedConsonant = '';
+                for(let k=0; k < consonantCluster.length; k++){
+                    convertedConsonant += unicodeToFmlMap[consonantCluster[k]] || consonantCluster[k];
+                }
+
+                let convertedVowel = vowelSign ? (unicodeToFmlMap[vowelSign] || vowelSign) : '';
                 
-                if (isNodeSelected) {
-                    originalTextPreview.textContent = originalText;
+                if(preVowelSigns.includes(vowelSign)){
+                     fmlString += convertedVowel + reph + convertedConsonant;
                 } else {
-                    originalTextPreview.textContent = '(No text selected)';
+                     fmlString += reph + convertedConsonant + convertedVowel;
                 }
-            }
-        };
 
-        applyButton.onclick = () => {
-            if (!isNodeSelected || !originalText) {
-                parent.postMessage({ pluginMessage: { type: 'notify', message: 'No text content to convert.', isError: true } }, '*');
-                return;
+                i = (vowelIndex > -1 ? vowelIndex : i + consonantCluster.length + 1) + 1;
+                continue;
             }
 
-            const selectedFont = JSON.parse(fontFamilySelect.value);
-            let convertedText = originalText;
-            
-            if (currentMode === 'legacy') {
-                convertedText = convertUnicodeToFml(originalText);
+            // Vowel sign reordering (e.g., കി, കെ)
+            if (consonants.includes(char) && preVowelSigns.includes(nextChar)) {
+                fmlString += (unicodeToFmlMap[nextChar] || nextChar) + (unicodeToFmlMap[char] || char);
+                i += 2;
+                continue;
             }
 
-            parent.postMessage({
-                pluginMessage: {
-                    type: 'apply-font-and-text',
-                    font: selectedFont,
-                    convertedText: convertedText
-                }
-            }, '*');
-        };
-
-        function convertUnicodeToFml(unicodeText) {
-            // This is a simplified Unicode to FML converter.
-            // A production version would require a much more extensive and carefully ordered set of rules.
-            let text = unicodeText;
-            const mapping = {
-                // Vowels
-                'അ': 'A', 'ആ': 'B', 'ഇ': 'C', 'ഈ': 'D', 'ഉ': 'E', 'ഊ': 'F', 'ഋ': 'G',
-                'എ': 'H', 'ഏ': 'I', 'ഐ': 'sI', 'ഒ': 'J', 'ഓ': 'K', 'ഔ': 'Ku',
-
-                // Consonants
-                'ക': 'k', 'ഖ': 'J', 'ഗ': 'g', 'ഘ': 'L', 'ങ': '§',
-                'ച': 'N', 'ഛ': 'O', 'ജ': 'P', 'ഝ': 'Q', 'ഞ': 'R',
-                'ട': 'S', 'ഠ': 'T', 'ഡ': 'U', 'ഢ': 'V', 'ണ': 'W',
-                'ത': 'X', 'ഥ': 'Y', 'ദ': 'Z', 'ധ': 'À', 'ന': 'n',
-                'പ': ']', 'ഫ': '^', 'ബ': '_', 'ഭ': '`', 'മ': 'a',
-                'യ': 'b', 'ര': 'c', 'ല': 'e', 'വ': 'h', 'ശ': 'i', 'ഷ': 'j', 'സ': 'k',
-                'ഹ': 'l', 'ള': 'f', 'ഴ': 'g', 'റ': 'd',
-
-                // Chandrakkala (Virama) and vowel signs must be handled carefully.
-                // Replace vowel signs first.
-                'ാ': 'm', 'ി': 'n', 'ീ': 'o', 'ു': 'p', 'ൂ': 'q', 'ൃ': 'r',
-                'െ': 's', 'േ': 't', 'ൈ': 'ss',
-                'ൊ': 'sm', 'ോ': 'tm', 'ൌ': 'u', 'ം': 'w', 'ഃ': 'x',
-
-                // Conjuncts and Chillu need specific rules and reordering.
-                // This is a highly complex process. We'll handle a few common cases.
-                // Re-ordering for 'ര' sign (reph).
-                '്ര': 'c',
-                '്ര്': 'À', // Special case handling might be needed.
-
-                // Chillu letters
-                'ൻ': '³', 'ർ': 'À', 'ൽ': 'Â', 'ൾ': 'Ä', 'ൺ': '¬',
-
-                // Virama (Chandrakkala)
-                '്': 'v',
-            };
-
-            // This is a very simplified conversion. The order of replacement is critical.
-            // A more robust implementation would parse the text logically.
-
-            // First, deal with combinations that reorder characters.
-            // Example: െ + ക -> കെ ('s' must come before 'k')
-            text = text.replace(/െ(.)/g, 's$1');
-            text = text.replace(/േ(.)/g, 't$1');
-            text = text.replace(/ൈ(.)/g, 'ss$1');
-            text = text.replace(/ൊ(.)/g, 'sm$1');
-            text = text.replace(/ോ(.)/g, 'tm$1');
-
-            // Replace conjuncts (example: ക്ക = ക + ് + ക)
-            text = text.replace(/ക്ക/g, "¡");
-            text = text.replace(/ച്ച/g, "¨");
-            text = text.replace(/ട്ട/g, "«");
-            text = text.replace(/ത്ത/g, "Ù");
-            text = text.replace(/പ്പ/g, "¸");
-            text = text.replace(/യ്യ/g, "b-");
-            text = text.replace(/വ്വ/g, "h-");
-            text = text.replace(/ശ്ശ/g, "i-");
-            text = text.replace(/സ്സ/g, "k-");
-            text = text.replace(/ള്ള/g, "f-");
-
-            // After handling complex reordering, do single character mapping
-            let result = '';
-            for (const char of text) {
-                result += mapping[char] || char;
-            }
-
-            // A final cleanup might be necessary for specific FML font quirks.
-            return result;
+            // Default mapping
+            fmlString += unicodeToFmlMap[char] || char;
+            i++;
         }
+        return fmlString;
+    }
 
-        // Initialize
-        setMode('unicode');
 
-    </script>
+    // --- Event Listeners ---
+    fontModeSelect.addEventListener('change', updateFontFamilies);
+    fontFamilySelect.addEventListener('change', convertText);
+
+    applyButton.addEventListener('click', () => {
+      if (!selectedNodeID) {
+        showError("No text layer selected in Figma.");
+        return;
+      }
+      const font = JSON.parse(fontFamilySelect.value);
+      const text = convertedOutput.value;
+      
+      parent.postMessage({ pluginMessage: { type: 'apply-text', text, font, nodeID: selectedNodeID } }, '*');
+    });
+
+    resetButton.addEventListener('click', () => {
+      unicodeInput.value = originalText;
+      fontModeSelect.value = 'unicode';
+      updateFontFamilies();
+    });
+
+    // Listen for messages from the plugin code
+    window.onmessage = event => {
+      const message = event.data.pluginMessage;
+      if (message.type === 'selection-change') {
+        if (message.node) {
+          selectedNodeID = message.node.id;
+          originalText = message.node.characters;
+          unicodeInput.value = originalText;
+          applyButton.disabled = false;
+          showError('');
+          convertText();
+        } else {
+          selectedNodeID = null;
+          originalText = '';
+          unicodeInput.value = '';
+          convertedOutput.value = '';
+          applyButton.disabled = true;
+          showError('Please select a single text layer.');
+        }
+      }
+    };
+
+    // Initial setup
+    updateFontFamilies();
+  </script>
 </body>
 </html>

@@ -1,9 +1,8 @@
 {
-  "name": "Lipikaar | Malayalam Font Helper",
-  "id": "1351234567890123456",
+  "name": "Lipikaar: FML Font Converter",
+  "id": "1351234567891234567",
   "api": "1.0.0",
   "main": "code.js",
   "ui": "ui.html",
-  "editorType": ["figma"],
-  "permissions": []
+  "editorType": ["figma"]
 }
