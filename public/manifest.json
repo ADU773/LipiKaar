@@ -1,11 +1,9 @@
 {
-  "name": "Lipikaar - AI Malayalam Converter",
-  "id": "1352740950311029831",
+  "name": "Lipikaar | Malayalam Font Helper",
+  "id": "1351234567890123456",
   "api": "1.0.0",
   "main": "code.js",
   "ui": "ui.html",
   "editorType": ["figma"],
-  "networkAccess": {
-    "allowedDomains": ["https://generativelanguage.googleapis.com"]
-  }
+  "permissions": []
 }
